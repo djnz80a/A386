@@ -55,6 +55,9 @@ STR_SHORT:DB	5,'SHORT'
 
 ;
 
+EMES_SEEK:
+	DB	'Seek failed !$'
+
 EMES_ALLOC:
 	DB	'Alloc failed !$'
 
@@ -133,6 +136,8 @@ FLG2.FAR:DB	0
 PRE_SIZE:DB	0
 PRE_SIZE1:DB	0
 PRE_SIZE2:DW	0	;DB?
+
+C.MOVZX.CODE:	DB	0
 
 S.LEFT:	DEFS	4;2
 S.PNT:	DEFS	4;2
