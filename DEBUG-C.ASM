@@ -175,7 +175,7 @@ _DEBUG_NAME_END:
 ;01C 00001000 SECT1  notype ()    External     | _start
 ;03C 00004000 DEBUG  notype       External     | end
 
-	ds	700h
+	DEFS	700h
 
 
 

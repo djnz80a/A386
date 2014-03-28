@@ -617,59 +617,59 @@ LBLS35:	XCHG	EDX,EBX		;DX=BX
 
 ;*************************************
 
-OP.TBL:	DEFB	8
+OP.TBL:	DB	8
 	DD	PNT.A
-	DEFB	2
+	DB	2
 	DD	PNT.B
-	DEFB	9
+	DB	9
 	DD	PNT.C
-	DEFB	13
+	DB	13
 	DD	PNT.D
-	DEFB	1
+	DB	1
 	DD	PNT.E
-	DEFB	0
+	DB	0
 	DD	0	;F
-	DEFB	0
+	DB	0
 	DD	0	;G
-	DEFB	0
+	DB	0
 	DD	PNT.H
-	DEFB	6
+	DB	6
 	DD	PNT.I
-	DEFB	30
+	DB	30
 	DD	PNT.J
-	DEFB	0
+	DB	0
 	DD	0	;K
-	DEFB	8+3	;+lgdt+lidt+lldt
+	DB	8+3	;+lgdt+lidt+lldt
 	DD	PNT.L
 
-	DEFB	7
+	DB	7
 	DD	PNT.M	;M
 
-	DEFB	3+1	;+native
+	DB	3+1	;+native
 	DD	PNT.N
-	DEFB	3
+	DB	3
 	DD	PNT.O
-	DEFB	10
+	DB	10
 	DD	PNT.P
-	DEFB	0
+	DB	0
 	DD	0	;Q
-	DEFB	10+1	;real
+	DB	10+1	;real
 	DD	PNT.R
-	DEFB	16+16+3	;+SETCC+sgdt+sidt+sldt
+	DB	16+16+3	;+SETCC+sgdt+sidt+sldt
 	DD	PNT.S
-	DEFB	1
+	DB	1
 	DD	PNT.T	;T
-	DEFB	0
+	DB	0
 	DD	0	;U
-	DEFB	0
+	DB	0
 	DD	0	;V
-	DEFB	0
+	DB	0
 	DD	0	;W
-	DEFB	3
+	DB	3
 	DD	PNT.X
-	DEFB	0
+	DB	0
 	DD	0	;Y
-	DEFB	0
+	DB	0
 	DD	0	;Z
 
 
@@ -1816,25 +1816,25 @@ _DATA:
 
 
 ;
-CLINE:	DS	100H
+CLINE:	DEFS	100H
 
 
 
 
 
-MES1:	DEFM	'==== 8086 Self Assembler ===='
-	DEFB	0DH,0AH
-	DEFM	'       Programed by djnz80a'
-	DEFB	0DH,0AH,'$'
+MES1:	DB	'==== 8086 Self Assembler ===='
+	DB	0DH,0AH
+	DB	'       Programed by djnz80a'
+	DB	0DH,0AH,'$'
 
 
-FLG.J:	DS	4
+FLG.J:	DB	0
 
-PRE_SEG:DS	1
+PRE_SEG:DB	0
 
 
-VAL1:	DS	4
-VAL2:	DS	4
+VAL1:	DD	0
+VAL2:	DD	0
 
 USRDMA:
 
