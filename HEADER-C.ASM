@@ -6,20 +6,7 @@
 ;.entry_import:
 ;.data
 
-;FIXED? : make handle -> dword
-;OP.TBL pnt WORD -> DWORD
-;TODO:
-;ERR_CONT:
-;	CALL	ERRSUB
-;	MOV	ESP,[STACK]	<- ok?
-;
-
-;remove ".reloc" section
-
-
-
 ;http://msdn.microsoft.com/en-us/library/ms809762.aspx
-;HelloWorld_Con.exe
 
 PE_OFFSET EQU	000000C0H
 
@@ -28,8 +15,6 @@ DATA_ADD EQU 8000h+8000h+8000h+20000h	;read buf level 0 + write buf + read buf l
 ;DATA_ADD EQU 0
 
 
-;TODO: get ride of ".reloc" section?
-;TODO: make same alignment
 ;FILE_ALIGN EQU	200h
 FILE_ALIGN EQU	1000h	;##
 SECTION_ALIGN EQU	1000h
