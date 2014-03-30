@@ -33,7 +33,7 @@ ID_EOF		EQU	0FFH
 ;EXTRN_LINK_END	EQU	0C0000H
 EXTRN_LINK_MEMORY_SIZE EQU	20000H
 
-linesize equ	1024
+LINESIZE EQU	1024
 
 R.BUF	EQU	4000H;1000H;8000H;1000H	;buffer for read
 W.BUF	EQU	4000H;800H;8000H;800H	;buffer for write
@@ -483,15 +483,15 @@ PUT.L1:	MOV	AL,[EBX]		;string
 	CALL	PUT.L20
 	MOV	AL,[EBX]		;value
 
-	mov	al,[ebx+3]
-	call	put.l30
-	mov	al,[ebx+2]
-	call	put.l30
-	mov	al,[ebx+1]
-	call	put.l30
-	mov	al,[ebx]
-	call	put.l30
-	add	Ebx,4
+	MOV	AL,[EBX+3]
+	CALL	PUT.L30
+	MOV	AL,[EBX+2]
+	CALL	PUT.L30
+	MOV	AL,[EBX+1]
+	CALL	PUT.L30
+	MOV	AL,[EBX]
+	CALL	PUT.L30
+	ADD	EBX,4
 
 	MOV	AL,20H
 	CALL	PUT.L20
@@ -598,15 +598,15 @@ PUT.P1.50:
 	DEC	CH
 	JNE	PUT.P1
 
-	mov	al,[ebx]
-	call	putCHR.P
-	mov	al,[ebx+1]
-	call	putCHR.P
-	mov	al,[ebx+2]
-	call	putCHR.P
-	mov	al,[ebx+3]
-	call	putCHR.P
-	add	Ebx,4
+	MOV	AL,[EBX]
+	CALL	PUTCHR.P
+	MOV	AL,[EBX+1]
+	CALL	PUTCHR.P
+	MOV	AL,[EBX+2]
+	CALL	PUTCHR.P
+	MOV	AL,[EBX+3]
+	CALL	PUTCHR.P
+	ADD	EBX,4
 
 	MOV	AL,[EBX]
 	CALL	PUTCHR.P
@@ -896,7 +896,7 @@ LINK#80:
 	OR	AL,04H		;referd
 	MOV	[ATTR],AL
 
-	PUSH	[LBL.NX]
+	PUSH	DWORD [LBL.NX]
 
 	MOV	DWORD [SET.LBL.PNT],WORK1
 	MOV	EDX,[LBL.NX]

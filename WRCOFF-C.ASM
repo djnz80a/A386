@@ -57,16 +57,16 @@ WRITE_COFF_DEBUG_HEADER:
 
 WRITE_COFF_DEBUG_HEADER.10:
 	MOV	EAX,[VAL1]
-	pushad
-	push	eax
-	shr	eax,10h
-	mov	bx,ax
-	call	puth2
+	PUSHAD
+	PUSH	EAX
+	SHR	EAX,10H
+	MOV	BX,AX
+	CALL	PUTH2
 
-	pop	eax
-	mov	bx,ax
-	call	puth2
-	popad
+	POP	EAX
+	MOV	BX,AX
+	CALL	PUTH2
+	POPAD
 
 	SUB	EAX,IMAGE_BASE	;00400000h
 	MOV	[IMAGE_DEBUG_DIRECTORY_OFF],EAX

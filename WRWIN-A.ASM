@@ -229,10 +229,10 @@ GET_LABEL_VALUE:
 
 GET_LABEL_VALUE.10:
 	MOV	EAX,[VAL1]
-	pushad
-	mov	ebx,eax
-	call	puth4
-	popad
+	PUSHAD
+	MOV	EBX,EAX
+	CALL	PUTH4
+	POPAD
 
 	CLC
 

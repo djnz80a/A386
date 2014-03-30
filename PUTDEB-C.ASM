@@ -45,10 +45,10 @@ PUT_DEBUG:
 	SHL	EDX,10h
 	MOV	DX,AX
 
-	pushad
-	mov	ebx,edx
-	call	puth2
-	popad
+	PUSHAD
+	MOV	EBX,EDX
+	CALL	PUTH2
+	POPAD
 
 PUT_DEBUG.ALIGN.1:
 	;TEST	DX,0fh

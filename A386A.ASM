@@ -17,7 +17,7 @@ BASE:
 
 	;;ORG	0
 
-linesize equ	1024
+LINESIZE EQU	1024
 
 R.BUF	EQU	8000H;1000H	;buffer for read
 W.BUF	EQU	8000H;800H	;buffer for write
@@ -338,15 +338,15 @@ PUT.L1:	MOV	AL,[EBX]		;string
 	CALL	PUT.L20
 	MOV	AL,[EBX]		;value
 
-	mov	al,[ebx+3]
-	call	put.l30
-	mov	al,[ebx+2]
-	call	put.l30
-	mov	al,[ebx+1]
-	call	put.l30
-	mov	al,[ebx]
-	call	put.l30
-	add	bx,3
+	MOV	AL,[EBX+3]
+	CALL	PUT.L30
+	MOV	AL,[EBX+2]
+	CALL	PUT.L30
+	MOV	AL,[EBX+1]
+	CALL	PUT.L30
+	MOV	AL,[EBX]
+	CALL	PUT.L30
+	ADD	BX,3
 
 	MOV	AL,0DH
 	CALL	PUT.L20
