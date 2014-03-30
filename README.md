@@ -27,7 +27,4 @@ Build with A86:
 Usage:
   TODO
 
-Bug:
-	[ESP+n] is error
-	ESP[n] is ok
 
