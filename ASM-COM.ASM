@@ -36,11 +36,11 @@ WRITE_EXP_HEADER:
 	PUSH	DS
 	POP	ES
 
-	MOV	AX,4200H
+	MOV	AL,00H
 	MOV	EBX,[HDL2]
 	XOR	ECX,ECX
 	XOR	EDX,EDX
-	CALL	INT21_seek	;INT	21H
+	CALL	SYS_seek
 
 	MOV	EDI,USRDMA
 	MOV	ECX,200H
@@ -69,11 +69,10 @@ WRITE_EXP_HEADER:
 		ADD	EAX,400H
 		MOV	[USRDMA+0EH],EAX	;ESP
 
-	MOV	AX,4000H	;write
 	MOV	EBX,[HDL2]
 	MOV	EDX,USRDMA
 	MOV	ECX,200H
-	CALL	INT21_write	;INT	21H
+	CALL	SYS_write
 
 	RET
 
@@ -430,10 +429,10 @@ SUBI7:
 
 	PUSH	ESI
 	MOV	EBX,[HDL]
-	MOV	CX,0
-	MOV	DX,0
-	MOV	AX,4201H	;seek
-	CALL	INT21_seek	;INT	21H
+	MOV	ECX,0
+	MOV	EDX,0
+	MOV	AL,01H
+	CALL	SYS_seek
 	POP	ESI
 
 	SHL	EDX,10H
@@ -456,8 +455,8 @@ SUBI7:
 	MOV	[S.LEFT],EBX
 
 	MOV	EDX,[FCB]
-	MOV	AX,3D00H	;open
-	CALL	INT21_open	;INT	21H
+	MOV	AL,00H
+	CALL	SYS_open
 	MOV	[HDL],EAX
 
 	POP	ESI
@@ -3822,8 +3821,7 @@ GETC13:
 
 	MOV	EBX,[HDL]
 	MOV	ECX,R.BUF
-	MOV	AX,3F00H	;read
-	CALL	INT21_read	;INT	21H
+	CALL	SYS_read
 	MOV	[S.LEFT],EAX
 	CMP	EAX,R.BUF
 	MOV	AL,0
@@ -3875,8 +3873,7 @@ PUTC10:
 
 	MOV	EBX,[HDL2]
 	MOV	ECX,W.BUF
-	MOV	AX,4000H	;write
-	CALL	INT21_write	;INT	21H
+	CALL	SYS_write
 	POP	EDX
 	POP	ECX
 	JB	ERR3
@@ -3924,8 +3921,7 @@ FCBDEC.05:
 
 	PUSHAD
 	MOV	EBX,[HDL]
-	MOV	AX,3E00H	;close #
-	CALL	INT21_close	;INT	21H
+	CALL	SYS_close
 
 	MOV	ESI,[FCB]
 	MOV	EBX,[ESI+72]
@@ -3935,10 +3931,10 @@ FCBDEC.05:
 	JE	FCBDEC.10
 
 	MOV	EBX,[HDL]
-	MOV	AX,4200H	;seek
+	MOV	AL,00H	;seek
 	MOV	DX,[ESI+76]
 	MOV	CX,[ESI+78]
-	CALL	INT21_seek	;INT	21H
+	CALL	SYS_seek
 FCBDEC.10:
 	POPAD
 
@@ -4071,352 +4067,8 @@ DIV_HLDE.10:
 	RET
 
 
-;#define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
+#INCLUDE <ASM-SYS.ASM>
 
-INVALID_HANDLE_VALUE EQU -1
-
-
-
-
-;
-;3d00	open
-;	edx=filename
-;	>ax handle
-;	>cf=1 : error
-INT21_open:
-
-	PUSHAD
-	MOV	AL,'['
-	CALL	DOS02
-	MOV	ESI,EDX
-	CALL	_PUTSTR
-	MOV	AL,']'
-	CALL	DOS02
-	CALL	_PUTCRLF
-	POPAD
-
-	PUSH	0		;templateFile
-	PUSH	FILE_ATTRIBUTE_NORMAL
-	PUSH	OPEN_EXISTING	;CREATE_ALWAYS	;CREATE_NEW
-	PUSH	0		;securityAttribute
-	PUSH	0		;shareMode
-	PUSH	GENERIC_READ
-	PUSH	EDX		;FILENAME_TEST1
-	CALL	[IAT_CreateFileA]
-	CMP	EAX,INVALID_HANDLE_VALUE
-	JE	INT21_open.ERR
-
-	;MOV	[HDL_INFILE],EAX
-
-	CLC
-	RET
-INT21_open.ERR:
-	STC
-	RET
-
-;
-;3c00	create
-;	edx=filename
-;	>ax handle
-;	>cf=1 : error
-
-;
-INT21_create:
-
-	PUSHAD
-	MOV	AL,'['
-	CALL	DOS02
-	MOV	ESI,EDX
-	CALL	_PUTSTR
-	MOV	AL,']'
-	CALL	DOS02
-	CALL	_PUTCRLF
-	POPAD
-
-	PUSH	0		;templateFile
-	PUSH	FILE_ATTRIBUTE_NORMAL
-	PUSH	CREATE_ALWAYS	;CREATE_NEW
-	PUSH	0		;securityAttribute
-	PUSH	0		;shareMode
-	PUSH	GENERIC_WRITE
-	PUSH	EDX		;FILENAME_TEST1
-	CALL	[IAT_CreateFileA]
-	CMP	EAX,INVALID_HANDLE_VALUE
-	JE	INT21_create.ERR
-
-	;MOV	[HDL_OUTFILE],EAX
-
-	CLC
-	RET
-INT21_create.ERR:
-	STC
-	RET
-
-
-;#define FILE_BEGIN           0
-;#define FILE_CURRENT         1
-;#define FILE_END             2
-
-;4200	seek
-;	bx=handle
-;	cx : dx offset
-;
-;	> dx : ax current pointer
-
-INT21_seek:
-		;PUSHAD
-		;MOV	EDX,MES_SEEK
-		;CALL	DOS09
-		;POPAD
-
-		;PUSHAD
-		;CALL	PUTH4
-		;POPAD
-
-	SHL	ECX,10h
-	MOV	CX,DX
-
-	MOVZX	EAX,AL
-
-	PUSH	EAX
-	PUSH	0	;size<2GB
-	PUSH	ECX
-	PUSH	EBX
-	CALL	[IAT_SetFilePointer]
-
-	CMP	EAX,0FFFFFFFFH
-	JE	ERR_SEEK
-
-	MOV	EDX,EAX
-	SHR	EDX,10H
-	MOVZX	EAX,AX
-
-	CLC
-
-;erro check?
-
-	RET
-
-;MES_SEEK:DB	'(seek)$'
-
-INT21_getfilepointer:
-	
-
-
-;
-;3f00	read
-;	bx=handle
-;	edx=buf
-;	ecx=bytes
-;	>eax read bytes
-
-INT21_read:
-	
-	PUSH	0
-	PUSH	N_READ
-	PUSH	ECX
-	PUSH	EDX	;READ_BUF
-	PUSH	EBX	;[HDL_STDOUT]
-	CALL	[IAT_ReadFile]
-	OR	EAX,EAX
-	JE	INT21_read.ERR
-
-	MOV	EAX,[N_READ]
-	CLC
-	RET
-INT21_read.ERR:
-	XOR	EAX,EAX
-	STC
-	RET
-
-;4000	write
-;	bx=handle
-;	edx=buf
-;	ecx=bytes
-;	>eax wrote bytes
-;	cf=1 : error	
-;
-;4000	write/truncate
-;	ecx=edx=0
-;	bx=handle
-
-INT21_write:
-	XOR	EAX,EAX
-	MOV	AX,CX
-	OR	AX,DX
-	JE	INT21_truncate
-
-	PUSH	0
-	PUSH	N_WROTE
-	PUSH	ECX
-	PUSH	EDX	;READ_BUF
-	PUSH	EBX	;[HDL_STDOUT]
-	CALL	[IAT_WriteFile]
-	OR	EAX,EAX
-	JE	INT21_write.ERR
-
-	MOV	EAX,[N_WROTE]
-
-	CLC
-	RET
-
-INT21_write.ERR:
-	XOR	EAX,EAX
-	STC
-	RET
-
-
-INT21_truncate:
-	PUSH	EBX
-	CALL	[IAT_SetEndOfFile]
-	RET
-
-
-;3e00	close
-;	bx=handle
-;	cf=1 : error
-INT21_close:
-
-	PUSH	EBX
-	CALL	[IAT_CloseHandle]
-	OR	EAX,EAX
-	JE	INT21_close.ERR
-
-	CLC
-	RET
-
-INT21_close.ERR:
-	STC
-	RET
-
-
-;4c	exit
-;	al=code
-
-INT21_exit:
-	MOVZX	EAX,AL
-	PUSH	EAX
-	CALL	[IAT_ExitProcess]
-
-	RET
-
-INT21_putchr:
-	CALL	_PUTCHR
-	RET
-
-INT21_putstr:
-	;JMP	_DOS09
-
-
-	PUSHAD
-INT21_putstr.1:
-	MOV	AL,[EDX]
-	CMP	AL,'$'
-	JE	INT21_putstr.2
-	PUSH	EDX
-	;CALL	DOS02
-	MOV	DL,AL
-	CALL	INT21_putchr
-	POP	EDX
-	INC	EDX
-	JMP	INT21_putstr.1
-
-INT21_putstr.2:
-	POPAD
-	RET
-
-;
-;	put chr direct to console
-;
-INT91_1D:
-	PUSHAD
-	CALL	DOS02
-	POPAD
-	RET
-;
-;
-;
-;
-DOS02:
-;	DB	60H
-;	MOV	AH,02H
-;	MOV	DL,AL
-;	INT	21H
-;	DB	61H
-
-	PUSHAD
-
-	CALL	_PUTCHR
-
-	POPAD
-
-	RET
-
-DOS09:
-;	PUSH	EAX
-;	MOV	AH,09H
-;	INT	21H
-;	POP	EAX
-
-
-	PUSHAD
-DOS09.1:
-	MOV	AL,[EDX]
-	CMP	AL,'$'
-	JE	DOS09.R
-	PUSH	EDX
-	CALL	DOS02
-	POP	EDX
-	INC	EDX
-	JMP	DOS09.1
-
-DOS09.R:
-	POPAD
-	RET
-
-;
-;
-DOS09_Z:
-
-	PUSHAD
-DOS09_Z.1:
-	MOV	AL,[EDX]
-	OR	AL,AL
-	JE	DOS09_Z.R
-	PUSH	EDX
-	CALL	DOS02
-	POP	EDX
-	INC	EDX
-	JMP	DOS09_Z.1
-
-DOS09_Z.R:
-	POPAD
-	RET
-
-;not used
-;DOS0F:	MOV	AX,3D00H
-	INT	21H
-	RET
-
-;not used
-;DOS10:	MOV	AX,3E00H
-	INT	21H
-	RET
-
-;not used
-;DOS16:	MOV	AX,3C00H
-	INT	21H
-	RET
-
-;not used
-;DOS26:	MOV	AX,4000H
-	INT	21H
-	RET
-
-;not used
-;DOS27:	MOV	AX,3F00H
-	INT	21H
-	RET
 
 ERR_SEEK:
 	MOV	EDX,EMES_SEEK
